@@ -49,12 +49,19 @@ h1 {
   position: relative;
   cursor: pointer;
   transition: transform 0.3s ease;
+  
+  transform-origin: bottom center; /* 👈 add here */
+
 }
 
 .jar:hover {
   transform: scale(1.05);
 }
 
+  .jar.open {
+  transform: scale(1.03);
+}
+  
 .lid {
   width: 130px;
   height: 25px;
@@ -63,6 +70,14 @@ h1 {
   position: absolute;
   top: -20px;
   left: -5px;
+  transform-origin: top center;
+  transition: transform 0.6s ease, top 0.6s ease;
+}
+
+/* OPEN STATE */
+.jar.open .lid {
+  transform: rotateX(160deg) translateY(-10px);
+  top: -40px;
 }
 
 /* Message box */
@@ -175,7 +190,7 @@ const messages = [
   "We are also two strong and graceful deer because we are strong and graaceful!",
   "I notice how hard you work at the gym, you are so so so strong and your muscles look so good hehehehe (:",
   "I cant wait to give you so many kisses and hugs!",
-  "i love us, were so cool an cute',
+  "i love us, were so cool an cute",
   "you make me feel a lot less heavy and bring me a lot of light. thank you for that baby",
   "you are my favorite part of most days hehe" ,
   "you dont have to prove anyhting, im so proud of you for just existing and beign who you are.",
@@ -215,21 +230,24 @@ const messages = [
   "omg. i get too see you so soon im so so sos sos  excited!",
   "you have brought me so much hapiness, thank you beautiful, beautiful boy.",
   "i would love to own animals with you, read with you, travel with you, watch movies with you. everything!",
-  "HI LOL its almost time omg. i cant wait to see you sweetheart. We are going to have such a lovely time"
+  "HI LOL its almost time omg. i cant wait to see you sweetheart. We are going to have such a lovely time",
   "Hi lol. I love you, James." 
   
 ];
 
 // Day calculation
 function getDayNumber() {
-  const start = new Date("2026-04-19");
+  const start = new Date("2026-04-20");
   const today = new Date();
   return Math.floor((today - start) / (1000 * 60 * 60 * 24));
 }
-
+  
 function getMessage() {
   const day = getDayNumber();
   const messageBox = document.getElementById("message");
+  const jar = document.querySelector(".jar");
+
+  jar.classList.add("open"); // 👈 opens lid animation
 
   if (day < 0) {
     messageBox.innerText = "Not unlocked yet 💌";
@@ -243,13 +261,13 @@ function getMessage() {
     return;
   }
 
- const lastOpened = localStorage.getItem("lastOpenedDay");
+  const lastOpened = localStorage.getItem("lastOpenedDay");
 
-if (lastOpened !== null && Number(lastOpened) >= day) {
+  if (lastOpened !== null && Number(lastOpened) >= day) {
     messageBox.innerText = "Come back tomorrow (:";
     messageBox.style.opacity = 1;
     return;
-}
+  }
 
   messageBox.innerText = messages[day];
   messageBox.style.opacity = 1;
@@ -257,6 +275,12 @@ if (lastOpened !== null && Number(lastOpened) >= day) {
   localStorage.setItem("lastOpenedDay", day);
 
   createHearts();
+
+  // optional: close lid after a bit
+  setTimeout(() => {
+    jar.classList.remove("open");
+  }, 2500);
+  
 }
 
 // Heart animation
